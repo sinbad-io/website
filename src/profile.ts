@@ -13,7 +13,7 @@ export const DESCRIPTION =
 
 /** What the name in the statement opens. */
 export const ABOUT: readonly string[] = [
-  "I’m engaged to Laura, whom I met at university, and I’m the father of Elias, my wonderful son.",
+  "I’m engaged to Laura, whom I met at university, and I’m the father of Elias, our wonderful son.",
   "Laura is my foundation. She is what makes it possible for me to set out on journeys as crazy as building companies.",
   "We live in an old, renovated apartment in Copenhagen.",
 ];
