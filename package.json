@@ -1,0 +1,39 @@
+{
+  "name": "website",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3150",
+    "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "artifact": "npm run build && node scripts/artifact.mjs",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"writing/*.mdx\" scripts/*.mjs next.config.mjs public/*.js postcss.config.mjs",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"writing/*.mdx\" scripts/*.mjs next.config.mjs public/*.js postcss.config.mjs",
+    "check": "npm run format:check && npm run build && npm run typecheck"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@next/mdx": "16.3.4",
+    "clsx": "^2.1.1",
+    "motion": "^12.23.24",
+    "next": "16.3.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-mdx-frontmatter": "^6.0.0",
+    "tailwind-merge": "^3.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "prettier": "^3.9.8",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.7.3"
+  }
+}

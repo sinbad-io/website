@@ -1,0 +1,97 @@
+---
+title: Light through paper
+date: 2026-10-02
+summary: Two years of trying, and the week it finally worked.
+plate: fan-periwinkle-5
+---
+
+I’ve always wanted a gradient builder that makes gradients as beautiful as OpenAI’s. The ones on its old plugin cards: soft washes of cornflower and mint, one edge almost in focus, light leaking in from a corner.
+
+For two years I tried to build one from Justin Jay Wang’s [methods for random gradients](https://justinjay.wang/methods-for-random-gradients/). With Claude models, again and again. Every time: close, and wrong.
+
+Last week I tried again with Fable 5.1. It blew my mind. Every card on this site sits on what came out. Try it.
+
+<Playground />
+
+## The rule
+
+A seed goes in. A tile comes out. The same tile, every time, with no network.
+
+It built seven generators side by side, the way Wang did: heightmaps, mesh gradients, SVG filters, shader warps, streak fields, paper macros and petal bokeh. Three judge agents scored them against the references. The simplest one won.
+
+Then we optimised. Every round the scores went up and the pictures got worse. By version eight it was a stencil of nature.
+
+<figure>
+  <img
+    src="/media/light-through-paper/rounds.webp"
+    alt="Four procedural tiles from round eight above four tiles made by the image model"
+  />
+  <figcaption>
+    Above: round eight, procedural. Below: round nine, an image model.
+  </figcaption>
+</figure>
+
+## The moment
+
+I told it the work had got worse. It didn’t patch anything. It went back to the source and read Wang’s post again.
+
+His third method is almost a footnote: DALL·E 2, prompted for an abstract macro photograph of a flower, the raw outputs cropped. “More akin to a slot machine than exact science.” The gradients I loved were never made by code. They were photographs a model had dreamed from millions of real ones. For two years I had been asking code to imitate a dream.
+
+So it made them the way they were made. Every request to an image model, Gemini 3.1 Flash Image, carries three reference tiles and one paragraph that asks for the opposite of a picture of a thing:
+
+```python
+STYLE = (
+    "A new photograph in exactly the style, palette, softness and "
+    "abstraction of the reference images: an extreme macro of backlit "
+    "translucent {subject} in {palette}, shot with a fast lens "
+    "focused well in front of the subject so that NOTHING is "
+    "recognisable, only two to four large soft shapes of colour that "
+    "fill the whole frame and are cut off by its edges, one soft edge "
+    "slightly clearer than the rest, a leak of white light entering "
+    "from one edge or corner, airy and bright with the colour in the "
+    "mid-tones, no dark region, no black, no flower centre, no "
+    "stamens, no veins, no creases, no sharp edges, no text, faint "
+    "film grain. An abstract colour-field photograph, not a picture "
+    "of a thing."
+)
+```
+
+Text alone gave us real flowers. The pictures in the request made it work.
+
+## Saying no
+
+Generating is cheap. Choosing is the work. A curator agent scored every tile, ran blind grids against the references, and pulled anything you could name: a flower centre, a crease, a dark corner. When I asked for surf and got barrels with foam, I said: “they need to be more abstract, like the other examples.” The next batch asked for a wave remembered rather than seen.
+
+340 tiles. Four cents each. 101 kept.
+
+## The component
+
+Each tile is about 14 KB. Seeds walk the library in palette rotation, so seeds in a row never share a colour:
+
+```ts
+export function pickTile(seed: number, { mood, palette }: PickOptions = {}) {
+  let pool = TILES;
+  if (mood) pool = pool.filter((t) => t.mood === mood);
+  if (palette) pool = pool.filter((t) => t.palette === palette);
+  if (pool.length === 0) pool = TILES;
+  const n = pool.length;
+  if (!mood && !palette) return pool[(((seed - 1) % n) + n) % n];
+  const next = mulberry32(seed >>> 0);
+  next();
+  next();
+  next();
+  return pool[Math.floor(next() * n)];
+}
+```
+
+The list only grows, so a seed keeps its tile forever. It’s open source: [sinbad-io/gradient](https://github.com/sinbad-io/gradient).
+
+```tsx
+import { Gradient } from "gradient";
+
+<Gradient seed="project_42" style={{ aspectRatio: "2 / 1" }} />;
+```
+
+## What I learned
+
+Find out how the thing you love was made before you build a machine to imitate it. Judge to compare, never to specify. And when the numbers go up and the pictures get worse, believe the pictures.

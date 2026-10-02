@@ -1,0 +1,10 @@
+/* The colours the list draws with; the page sets the --ui-* values. Dark is a
+   `dark` class on an ancestor. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-ink: var(--ui-ink);
+  --color-ink-muted: var(--ui-ink-muted);
+  --color-surface: var(--ui-surface);
+  --color-rule: var(--ui-rule);
+}
