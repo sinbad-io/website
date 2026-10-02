@@ -747,7 +747,7 @@ html[data-morph] dialog.case {
   color: var(--mute);
 }
 .piece {
-  max-width: 42rem;
+  max-width: 52rem;
   margin: clamp(56px, 10vh, 140px) auto 0;
 }
 .piece-meta {
