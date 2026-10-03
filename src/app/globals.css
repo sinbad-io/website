@@ -577,6 +577,17 @@ html[data-morph] dialog.case {
 .about-text {
   grid-column: 5 / 12;
 }
+.case-body a {
+  color: var(--white);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--faint);
+  transition: text-decoration-color 0.3s ease;
+}
+.case-body a:hover {
+  text-decoration-color: var(--white);
+}
 .about-text .case-body + .case-body {
   margin-top: 0.8em;
 }

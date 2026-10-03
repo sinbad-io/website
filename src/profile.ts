@@ -11,11 +11,22 @@ export const COLOPHON = [
 export const DESCRIPTION =
   "Founder and builder. I teach machines to work, and design for the people beside them.";
 
-/** What the name in the statement opens. */
-export const ABOUT: readonly string[] = [
-  "I’m engaged to Laura, whom I met at university, and I’m the father of Elias, our wonderful son.",
-  "Laura is my foundation. She is what makes it possible for me to set out on journeys as crazy as building companies.",
-  "We live in an old, renovated apartment in Copenhagen.",
+/** A run of text, or a link. */
+export type Words = string | { readonly text: string; readonly href: string };
+
+/** What the name in the statement opens: paragraphs of runs. */
+export const ABOUT: readonly (readonly Words[])[] = [
+  [
+    "I’m engaged to Laura, whom I met at university, and I’m the father of Elias, our wonderful son. We live in an old, renovated apartment in Copenhagen.",
+  ],
+  [
+    "Laura is my foundation. She makes it possible for me to set out on journeys as crazy as building companies, and she is the reason I’m not afraid to fail, get back up and try again.",
+  ],
+  [
+    "I come from a family of builders. Since I was little, I’ve watched my dad build ",
+    { text: "Origo", href: "https://origo.io" },
+    ", and I learned early that the things you wish existed are yours to make. I want to leave the world a little better than I found it.",
+  ],
 ];
 
 export interface Art {

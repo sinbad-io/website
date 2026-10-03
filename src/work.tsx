@@ -210,9 +210,17 @@ export function About() {
           <img src="/oscar.jpg" alt={NAME} draggable={false} />
         </div>
         <div className="about-text">
-          {ABOUT.map((p) => (
-            <p key={p} className="case-body">
-              {p}
+          {ABOUT.map((paragraph, i) => (
+            <p key={i} className="case-body">
+              {paragraph.map((w, j) =>
+                typeof w === "string" ? (
+                  w
+                ) : (
+                  <a key={j} href={w.href} target="_blank" rel="noreferrer">
+                    {w.text}
+                  </a>
+                ),
+              )}
             </p>
           ))}
           <div className="case-links">
