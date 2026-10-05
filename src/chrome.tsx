@@ -1,6 +1,6 @@
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import type { ReactNode } from "react";
-import { COLOPHON, LINKEDIN, NAME } from "./profile";
+import { BOOKING, COLOPHON, LINKEDIN, NAME } from "./profile";
 
 export function Roll({ children }: { children: ReactNode }) {
   return (
@@ -86,6 +86,12 @@ export function Header() {
         <button type="button" commandfor="work" command="show-modal">
           <Roll>Work</Roll>
         </button>
+        <a href={BOOKING} target="_blank" rel="noreferrer">
+          <Roll>
+            Book 30 minutes
+            <Arrow />
+          </Roll>
+        </a>
         <a href={LINKEDIN} target="_blank" rel="noreferrer">
           <Roll>
             LinkedIn

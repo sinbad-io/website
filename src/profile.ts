@@ -2,6 +2,8 @@ export const NAME = "Oscar Antonio Borlund Orellana";
 
 export const LINKEDIN = "https://www.linkedin.com/in/oscar-a-b-orellana/";
 
+export const BOOKING = "https://cal.com/oscar-orellana/30min";
+
 export const COLOPHON = [
   "Oscar Antonio",
   "Borlund Orellana",
