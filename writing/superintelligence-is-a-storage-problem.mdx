@@ -1,0 +1,24 @@
+---
+title: Superintelligence is a storage problem
+date: 2026-10-05
+summary: And 8 billion agents are waiting for it
+plate: swell-cyan-3
+---
+
+I spent the last two months in San Francisco, and almost everyone I met was building an agent for something: sales, contracts, inboxes, code. Each one was clever, and each one arrived with its own memory, its own tools and its own small world to keep track of. We had built very intelligent things, and then quietly asked people to become their memory.
+
+Then instinct.co launched, and for the first time in weeks something simply worked. Someone had decided how everything underneath fit together, so I never had to. It was the feeling of a tool getting out of the way.
+
+## Latency stopped mattering
+
+We spent twenty years making software fast for people who were waiting, measuring databases in milliseconds. Once a model takes seconds to think, those milliseconds stop mattering. Agents run for hours, pause for days on an approval, crash and have to resume from the last step they completed. And a context window is not a memory: it is gone when the task ends, and it can't hold a year of someone's work.
+
+Stripped down, an agent that does real work needs four things: memory it can search and trust, a computer of its own to act in, execution that survives failure, and feedback that makes it better. And whatever holds them together has to absorb billions of interactions a second and keep every one of them, which pushes the whole problem down to the cheapest and most durable layer we have: object storage. Today those are four separate systems from four separate companies, a vector database, a sandbox, a workflow engine and a relational database, and every team building an agent stitches them together by hand.
+
+Every computing era was won by whoever integrated what everyone else kept separate. The personal computer became personal when hardware and software were designed together. The phone swallowed the camera, the music player and the map, and it stopped feeling like a device. Agents are about to have that moment. An agent is meant to do anything, for anyone, and precisely because it is so open on the outside, it has to be whole on the inside.
+
+## A mind is what it remembers
+
+Without memory you would still be intelligent, but you couldn't build on yesterday, learn from a mistake or keep a promise. An agent without memory is a brilliant stranger you meet again every morning. The models will keep getting better on their own. What they lack is somewhere to live.
+
+I don't picture superintelligence as one vast model that knows everything. I picture a mind beside each of us that remembers what we care about, carries the work we can't hold in our heads, and gets a little better every day. Most of what stands between us and that future isn't intelligence. It's memory, a place to act, and time - for the next eight billion agents being built.
