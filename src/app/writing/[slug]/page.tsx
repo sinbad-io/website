@@ -12,7 +12,23 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { post: p } = await post((await params).slug);
-  return { title: p.title, description: p.summary };
+  return {
+    title: p.title,
+    description: p.summary,
+    openGraph: {
+      type: "article",
+      title: p.title,
+      description: p.summary,
+      publishedTime: p.date,
+      url: `/writing/${p.slug}/`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      creator: "@oscaraborellana",
+      title: p.title,
+      description: p.summary,
+    },
+  };
 }
 
 export default async function Piece({ params }: Props) {

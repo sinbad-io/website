@@ -5,8 +5,10 @@ import { Dialogs } from "@/work";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://oscaraborellana.com"),
   title: { default: NAME, template: `%s · ${NAME}` },
   description: DESCRIPTION,
+  twitter: { card: "summary_large_image", creator: "@oscaraborellana" },
 };
 
 export const viewport: Viewport = {
