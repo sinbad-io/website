@@ -5,8 +5,7 @@ photograph under the pointer and opens the About page; each company shows its pl
 grain, the role and months along the top and the logo or the name set large at the foot, every word in glass) and a
 click grows the plate into a full-screen page about the work. The header's Work tab opens every role as the kit's
 `InteractiveListPreview`, each row opening its page. Next.js 16 (App Router, static export) and MDX. The look is dark
-only, Geist and Geist Mono, the diagonal ground, mono labels, square plates. The header keeps the time in Copenhagen and
-San Francisco, with the sun or the moon as it is there.
+only, Geist and Geist Mono, the diagonal ground, mono labels, square plates.
 
 - `npm ci`, then `npm run dev` serves it on :3150.
 - `npm run check` is the lane: format, build (`out/`), types.
@@ -24,8 +23,7 @@ oscaraborellana.com. The build is the static export in `out/`.
 The About, Work and company pages are native `<dialog>`s in the root layout, so every page can open them, opened by HTML
 invoker commands (`commandfor`, `command="show-modal"`): they open, trap focus and close on Escape with no script at all,
 and the published artifact has none of Next's. `public/site.js` is the one script, framework-free so the artifact keeps
-it, and it listens on the document, so a React re-render never loses it. It keeps the clocks current (the sun's altitude
-at each city decides sun or moon), places a plate or the photograph over the line under the pointer (or on keyboard
+it, and it listens on the document, so a React re-render never loses it. It places a plate or the photograph over the line under the pointer (or on keyboard
 focus), morphs the plate, the photograph or a Work row's preview into the page's hero and back with a view transition,
 gives each page an address (`/#rig`) that opens it and that Back closes, and runs the gradient playground.
 
