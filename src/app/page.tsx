@@ -40,6 +40,7 @@ export default async function Home() {
               variant="statement"
               previewScale={0.9}
               previewClassName="left-[51%]"
+              stacked="(pointer: coarse), (max-width: 640px)"
               aria-label="Writing"
               items={writing.map((p) => ({
                 id: p.slug,

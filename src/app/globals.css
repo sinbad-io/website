@@ -1059,6 +1059,14 @@ html[data-morph] dialog.case {
   .roles {
     margin-inline: -16px;
   }
+  .posts > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .posts > ul > li:where(.flex) {
+    border-bottom: 0;
+  }
   .posts li:where(.grid) {
     grid-template-columns: minmax(0, 1fr);
     row-gap: 6px;

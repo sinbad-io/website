@@ -3,6 +3,7 @@
 import { animate, motion, useMotionValue } from "motion/react";
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   useSyncExternalStore,
@@ -37,6 +38,8 @@ export interface InteractiveListPreviewProps extends Omit<
   readonly previewScale?: number;
   /** Where the preview frame sits, over the variant's own placement. */
   readonly previewClassName?: string;
+  /** A media query under which every row shows its preview beside its text; a touch screen always does. */
+  readonly stacked?: string;
   /** Seconds a preview takes to open or to close. */
   readonly duration?: number;
   /** Seconds the bar and a row's ink take to follow the pointer. */
@@ -108,18 +111,20 @@ function clamp(value: number, min: number, max: number, fallback: number) {
     : fallback;
 }
 
-function subscribeCoarse(onChange: () => void) {
-  if (typeof window.matchMedia !== "function") return () => {};
-  const query = window.matchMedia("(pointer: coarse)");
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
+const COARSE = "(pointer: coarse)";
+
+function subscribeQuery(query: string) {
+  return (onChange: () => void) => {
+    if (typeof window.matchMedia !== "function") return () => {};
+    const list = window.matchMedia(query);
+    list.addEventListener("change", onChange);
+    return () => list.removeEventListener("change", onChange);
+  };
 }
 
-function coarseNow() {
-  return (
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(pointer: coarse)").matches
-  );
+function queryNow(query: string) {
+  return () =>
+    typeof window.matchMedia === "function" && window.matchMedia(query).matches;
 }
 
 function coarseOnServer() {
@@ -133,6 +138,7 @@ export function InteractiveListPreview({
   columns = 1,
   previewScale = 1,
   previewClassName,
+  stacked,
   duration = 0.6,
   smoothness = 0.35,
   lerp = 0.18,
@@ -140,11 +146,10 @@ export function InteractiveListPreview({
   ...props
 }: InteractiveListPreviewProps) {
   const reduced = useReducedMotionSafe();
-  const coarse = useSyncExternalStore(
-    subscribeCoarse,
-    coarseNow,
-    coarseOnServer,
-  );
+  const query = stacked ?? COARSE;
+  const subscribe = useMemo(() => subscribeQuery(query), [query]);
+  const snapshot = useMemo(() => queryNow(query), [query]);
+  const coarse = useSyncExternalStore(subscribe, snapshot, coarseOnServer);
   const scale = clamp(previewScale, 0.5, 2, 1);
   const open = clamp(duration, 0.1, 2, 0.6);
   const follow = clamp(smoothness, 0.05, 1.5, 0.35);
