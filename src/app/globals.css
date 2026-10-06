@@ -122,6 +122,13 @@ html:has(dialog.case[open]) {
 .head .side {
   justify-self: end;
 }
+.head .clocks {
+  align-items: center;
+}
+.head .clock time {
+  min-width: 0;
+  text-align: left;
+}
 .colophon {
   display: flex;
   flex-direction: column;
@@ -1108,6 +1115,45 @@ html[data-morph] dialog.case {
   .roles {
     margin-inline: -16px;
   }
+  .posts li:where(.grid) {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 6px;
+    padding-block: 20px;
+  }
+  .posts li > span {
+    padding-block: 0;
+  }
+  .posts li > span[aria-hidden="true"] {
+    display: none;
+  }
+  .posts > div:nth-child(2),
+  .roles > div:nth-child(2) {
+    z-index: 40;
+  }
+  .posts > div:nth-child(2) > div,
+  .roles > div:nth-child(2) > div {
+    left: auto !important;
+    right: 16px;
+    width: min(56vw, 15rem) !important;
+    height: calc(min(56vw, 15rem) * 1.154) !important;
+  }
+  .roles li:where(.grid) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 4px;
+    padding-block: 14px;
+  }
+  .roles li > span {
+    padding-block: 0;
+  }
+  .roles li > span[aria-hidden="true"] {
+    display: none;
+  }
+  .roles li > span:last-child {
+    grid-column: 1 / -1;
+  }
+  .statement {
+    margin-top: 56px;
+  }
 }
 @media (max-width: 560px) {
   .lab-row {
@@ -1115,10 +1161,13 @@ html[data-morph] dialog.case {
   }
   .head {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
   }
   .head .clocks {
-    order: 3;
+    display: none;
+  }
+  .head .side {
+    align-items: flex-end;
   }
   .side,
   .clocks {
