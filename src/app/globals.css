@@ -115,6 +115,13 @@ html:has(dialog.case[open]) {
   gap: 16px 24px;
   padding-top: var(--pad-y);
 }
+.head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+.head .side {
+  justify-self: end;
+}
 .colophon {
   display: flex;
   flex-direction: column;
@@ -738,6 +745,11 @@ html[data-morph] dialog.case {
 .foot a:hover {
   color: var(--white);
 }
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
 
 /* one piece of writing */
 .lead {
@@ -1102,7 +1114,11 @@ html[data-morph] dialog.case {
     grid-template-columns: minmax(0, 1fr);
   }
   .head {
+    display: flex;
     flex-direction: column;
+  }
+  .head .clocks {
+    order: 3;
   }
   .side,
   .clocks {

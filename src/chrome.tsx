@@ -1,6 +1,6 @@
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import type { ReactNode } from "react";
-import { BOOKING, COLOPHON, LINKEDIN, NAME } from "./profile";
+import { COLOPHON, LINKEDIN, NAME, X } from "./profile";
 
 export function Roll({ children }: { children: ReactNode }) {
   return (
@@ -82,29 +82,37 @@ export function Header() {
   return (
     <header className="head">
       <Colophon />
+      <div className="clocks" aria-label="Local times">
+        {PLACES.map((p) => (
+          <Clock key={p.zone} place={p} />
+        ))}
+      </div>
       <div className="side">
         <button type="button" commandfor="work" command="show-modal">
           <Roll>Work</Roll>
         </button>
-        <a href={BOOKING} target="_blank" rel="noreferrer">
-          <Roll>
-            Book 30 minutes
-            <Arrow />
-          </Roll>
-        </a>
-        <a href={LINKEDIN} target="_blank" rel="noreferrer">
-          <Roll>
-            LinkedIn
-            <Arrow />
-          </Roll>
-        </a>
-        <div className="clocks" aria-label="Local times">
-          {PLACES.map((p) => (
-            <Clock key={p.zone} place={p} />
-          ))}
-        </div>
+        <Links />
       </div>
     </header>
+  );
+}
+
+function Links() {
+  return (
+    <>
+      <a href={LINKEDIN} target="_blank" rel="noreferrer">
+        <Roll>
+          LinkedIn
+          <Arrow />
+        </Roll>
+      </a>
+      <a href={X} target="_blank" rel="noreferrer">
+        <Roll>
+          X
+          <Arrow />
+        </Roll>
+      </a>
+    </>
   );
 }
 
@@ -112,12 +120,9 @@ export function Footer() {
   return (
     <footer className="foot">
       <span>©2026 {NAME}</span>
-      <a href={LINKEDIN} target="_blank" rel="noreferrer">
-        <Roll>
-          LinkedIn
-          <Arrow />
-        </Roll>
-      </a>
+      <nav className="foot-links" aria-label="Elsewhere">
+        <Links />
+      </nav>
     </footer>
   );
 }
