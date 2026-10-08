@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: p.title,
     description: p.summary,
+    ...(p.draft ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       type: "article",
       title: p.title,
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Piece({ params }: Props) {
   const { slug } = await params;
   const { post: p, Content } = await post(slug);
-  const all = await posts();
+  const all = (await posts()).filter((x) => !x.draft || x.slug === slug);
   const at = all.findIndex((x) => x.slug === slug);
   const newer = all[at - 1];
   const older = all[at + 1];

@@ -1,5 +1,6 @@
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import type { ReactNode } from "react";
+import { DraftsMenu } from "./drafts";
 import { COLOPHON, LINKEDIN, NAME, X } from "./profile";
 
 export function Roll({ children }: { children: ReactNode }) {
@@ -28,7 +29,9 @@ export function Colophon() {
 export function Header() {
   return (
     <header className="head">
-      <Colophon />
+      <DraftsMenu>
+        <Colophon />
+      </DraftsMenu>
       <div className="side">
         <button type="button" commandfor="work" command="show-modal">
           <Roll>Work</Roll>

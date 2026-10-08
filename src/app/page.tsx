@@ -44,7 +44,16 @@ export default async function Home() {
               aria-label="Writing"
               items={writing.map((p) => ({
                 id: p.slug,
-                label: <time dateTime={p.date}>{formatDate(p.date)}</time>,
+                label: (
+                  <>
+                    <time dateTime={p.date}>{formatDate(p.date)}</time>
+                    {p.draft ? (
+                      <span className="draft-mark" data-draft="">
+                        Draft
+                      </span>
+                    ) : null}
+                  </>
+                ),
                 meta: (
                   <a href={`/writing/${p.slug}/`} className="post-link">
                     {p.title}

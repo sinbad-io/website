@@ -123,6 +123,45 @@ html:has(dialog.case[open]) {
 .colophon span:last-child {
   color: var(--faint);
 }
+.colophon-menu {
+  display: flex;
+}
+.menu {
+  min-width: 10rem;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgb(28 28 30 / 0.92);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 rgb(250 250 250 / 0.08),
+    0 0 0 1px rgb(250 250 250 / 0.08),
+    0 18px 40px rgb(0 0 0 / 0.5);
+  outline: none;
+}
+.menu-item {
+  display: flex;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--mute);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: default;
+  outline: none;
+  user-select: none;
+}
+.menu-item[data-highlighted] {
+  background: rgb(250 250 250 / 0.08);
+  color: var(--white);
+}
+html:not(.drafts) li:has([data-draft]) {
+  display: none;
+}
+.draft-mark {
+  margin-left: 1ch;
+  color: var(--faint);
+}
 .side {
   display: flex;
   flex-direction: column;

@@ -13,6 +13,8 @@ export interface Post {
   readonly minutes: number;
   /** The body's first paragraphs as plain text. */
   readonly opening: readonly string[];
+  /** Built and reachable by its address, but listed only when drafts are shown. */
+  readonly draft: boolean;
 }
 
 const DIR = join(process.cwd(), "writing");
@@ -64,6 +66,7 @@ async function load(slug: string) {
         : plateFor(slug),
     minutes: Math.max(1, Math.round(body.join(" ").split(" ").length / 220)),
     opening: body.slice(0, 3),
+    draft: front.draft === true,
   };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(post.date))
     throw new Error(`writing/${slug}.mdx: date is not YYYY-MM-DD`);

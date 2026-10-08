@@ -4,6 +4,9 @@
 (() => {
   const html = document.documentElement;
   html.classList.add("js");
+  try {
+    if (localStorage.getItem("drafts") === "1") html.classList.add("drafts");
+  } catch {}
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const fine = matchMedia("(hover: hover) and (pointer: fine)");
 
