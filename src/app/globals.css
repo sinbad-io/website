@@ -231,7 +231,7 @@ html:not(.drafts) li:has([data-draft]) {
   grid-template-rows: auto minmax(64px, 1fr) auto auto;
   column-gap: var(--gap);
   min-height: calc(100svh - var(--pad-y) - 52px);
-  padding-block: clamp(72px, 13vh, 180px) var(--pad-y);
+  padding-block: clamp(72px, 13vh, 180px) clamp(48px, 8vh, 96px);
 }
 .index,
 .aside,
@@ -258,7 +258,7 @@ html:not(.drafts) li:has([data-draft]) {
   grid-column: 3 / -1;
   margin: 0;
   font-weight: 500;
-  font-size: clamp(40px, 6.2vw, 112px);
+  font-size: clamp(36px, 5.4vw, 98px);
   line-height: 0.94;
   letter-spacing: -0.055em;
   color: var(--faint);
@@ -1255,7 +1255,7 @@ html[data-morph] dialog.case {
   }
   .statement {
     grid-row: 2;
-    font-size: clamp(40px, 11.6vw, 96px);
+    font-size: clamp(36px, 10.2vw, 84px);
     text-wrap: pretty;
   }
   .aside {
