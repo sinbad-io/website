@@ -1,4 +1,4 @@
-// Plates that follow the pointer, a page that grows out of its plate,
+// A clock, plates that follow the pointer, a page that grows out of its plate,
 // and the gradient playground. The page works without this file: dialogs open
 // by invoker commands and a plate shows over its name on hover.
 (() => {
@@ -9,6 +9,51 @@
   } catch {}
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const fine = matchMedia("(hover: hover) and (pointer: fine)");
+
+  /* --- clock: the time in Copenhagen, and whether its sun is up --- */
+
+  const RAD = Math.PI / 180;
+  function sunUp(when, lat, lon) {
+    const d = when.getTime() / 86400000 - 10957.5;
+    const g = (357.529 + 0.98560028 * d) * RAD;
+    const q = 280.459 + 0.98564736 * d;
+    const l = (q + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * RAD;
+    const e = (23.439 - 0.00000036 * d) * RAD;
+    const ra = Math.atan2(Math.cos(e) * Math.sin(l), Math.cos(l));
+    const dec = Math.asin(Math.sin(e) * Math.sin(l));
+    const gmst = (18.697374558 + 24.06570982441908 * d) % 24;
+    const ha = (gmst * 15 + lon) * RAD - ra;
+    const alt = Math.asin(
+      Math.sin(lat * RAD) * Math.sin(dec) +
+        Math.cos(lat * RAD) * Math.cos(dec) * Math.cos(ha),
+    );
+    return alt > -0.833 * RAD;
+  }
+
+  const formats = new Map();
+  function tick() {
+    const now = new Date();
+    for (const el of document.querySelectorAll("[data-clock]")) {
+      const zone = el.dataset.clock;
+      if (!formats.has(zone))
+        formats.set(
+          zone,
+          new Intl.DateTimeFormat(el.dataset.locale, {
+            timeZone: zone,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          }),
+        );
+      const time = el.querySelector("time");
+      if (time) time.textContent = formats.get(zone).format(now);
+      el.dataset.sun = sunUp(now, +el.dataset.lat, +el.dataset.lon)
+        ? "up"
+        : "down";
+    }
+    setTimeout(tick, 1000 - (Date.now() % 1000));
+  }
+  tick();
 
   /* --- plates: over the line under the pointer, eased toward it --- */
 

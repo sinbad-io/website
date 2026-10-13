@@ -1,6 +1,6 @@
 import { InteractiveListPreview } from "@/kit/interactive-list-preview";
 import { Cascade } from "@/cascade";
-import { Footer, Header } from "@/chrome";
+import { Clock, Footer, Header } from "@/chrome";
 import { ENTRIES } from "@/profile";
 import { Name, Person, PostPlate } from "@/work";
 import { formatDate, posts } from "@/writing";
@@ -24,10 +24,13 @@ export default async function Home() {
             </p>
             <h1 id="intro-title" className="statement">
               <Cascade>
-                Hi, I’m <Person>Oscar</Person>. I teach machines to work, and
+                Hi, I’m <Person>Oscar</Person>. I teach machines to work, and
                 design for the people beside them.
               </Cascade>
             </h1>
+            <p className="aside" aria-hidden="true">
+              Background
+            </p>
             <p className="sequel">
               <Cascade>
                 Now founding a company in{" "}
@@ -40,7 +43,9 @@ export default async function Home() {
             </p>
             <p className="spec">
               <span>Copenhagen</span>
-              <span>55.68° N, 12.57° E</span>
+              <Clock />
+              <span>55.68° N</span>
+              <span>12.57° E</span>
             </p>
           </section>
 

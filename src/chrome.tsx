@@ -16,6 +16,41 @@ export function Arrow() {
   return <ArrowUpRightIcon className="arrow" aria-hidden="true" />;
 }
 
+function Sun() {
+  return (
+    <svg className="sun" viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="2.6" />
+      <path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1" />
+    </svg>
+  );
+}
+
+function Moon() {
+  return (
+    <svg className="moon" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M12.8 10.2A5.4 5.4 0 0 1 5.8 3.2a5.4 5.4 0 1 0 7 7Z" />
+    </svg>
+  );
+}
+
+/** Copenhagen's time and whether its sun is up; site.js keeps both current. */
+export function Clock() {
+  return (
+    <span
+      className="clock"
+      data-clock="Europe/Copenhagen"
+      data-locale="en-GB"
+      data-lat="55.6761"
+      data-lon="12.5683"
+      suppressHydrationWarning
+    >
+      <Sun />
+      <Moon />
+      <time suppressHydrationWarning>00:00:00</time>
+    </span>
+  );
+}
+
 export function Colophon() {
   return (
     <a href="/" className="colophon" aria-label={`${NAME}, home`}>

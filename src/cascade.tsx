@@ -25,10 +25,10 @@ export function Cascade({ children }: { children: ReactNode }) {
       continue;
     }
     String(child)
-      .split(/(\s+)/)
+      .split(/( +)/)
       .forEach((part, p) => {
         if (part === "") return;
-        if (/^\s+$/.test(part)) out.push(part);
+        if (/^ +$/.test(part)) out.push(part);
         else if (p === 0 && out.length && Array.isArray(out.at(-1)))
           (out.at(-1) as ReactNode[]).push(part);
         else unit(part);
