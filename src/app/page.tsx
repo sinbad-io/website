@@ -1,4 +1,5 @@
 import { InteractiveListPreview } from "@/kit/interactive-list-preview";
+import { Cascade } from "@/cascade";
 import { Footer, Header } from "@/chrome";
 import { ENTRIES } from "@/profile";
 import { Name, Person, PostPlate } from "@/work";
@@ -17,15 +18,31 @@ export default async function Home() {
       <div className="page">
         <Header />
         <main>
-          <h1 className="statement">
-            Hi, I’m <Person>Oscar</Person>. I teach machines to work, and design
-            for the people beside them. Now founding a company in{" "}
-            <Name entry={at("stealth")}>stealth</Name>. Before that, I led
-            Infrastructure and Foundations at <Name entry={at("legora")} />,
-            Product at <Name entry={at("beyond-work")} /> and founded{" "}
-            <Name entry={at("rig")} /> in my dorm room at 23, while studying
-            computer science at <Name entry={at("aarhus")} />.
-          </h1>
+          <section className="intro" aria-labelledby="intro-title">
+            <p className="index" aria-hidden="true">
+              <span>(01)</span> About
+            </p>
+            <h1 id="intro-title" className="statement">
+              <Cascade>
+                Hi, I’m <Person>Oscar</Person>. I teach machines to work, and
+                design for the people beside them.
+              </Cascade>
+            </h1>
+            <p className="sequel">
+              <Cascade>
+                Now founding a company in{" "}
+                <Name entry={at("stealth")}>stealth</Name>. Before that, I led
+                Infrastructure and Foundations at <Name entry={at("legora")} />,
+                Product at <Name entry={at("beyond-work")} /> and founded{" "}
+                <Name entry={at("rig")} /> in my dorm room at 23, while studying
+                computer science at <Name entry={at("aarhus")} />.
+              </Cascade>
+            </p>
+            <p className="spec">
+              <span>Copenhagen</span>
+              <span>55.68° N, 12.57° E</span>
+            </p>
+          </section>
 
           <section
             id="writing"
@@ -33,7 +50,7 @@ export default async function Home() {
             aria-labelledby="writing-title"
           >
             <h2 id="writing-title" className="shead">
-              Writing
+              <span>(02)</span> Writing
             </h2>
             <InteractiveListPreview
               className="posts overflow-visible bg-transparent"
