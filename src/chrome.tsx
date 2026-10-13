@@ -19,9 +19,19 @@ export function Arrow() {
 export function Colophon() {
   return (
     <a href="/" className="colophon" aria-label={`${NAME}, home`}>
-      {COLOPHON.map((line) => (
-        <span key={line}>{line}</span>
-      ))}
+      <img
+        className="arms"
+        src="/arms.webp"
+        alt=""
+        width={156}
+        height={192}
+        draggable={false}
+      />
+      <span className="lines">
+        {COLOPHON.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+      </span>
     </a>
   );
 }
