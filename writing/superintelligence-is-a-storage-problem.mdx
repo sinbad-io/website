@@ -1,18 +1,53 @@
 ---
 title: Superintelligence is a storage problem
-date: 2026-10-05
-summary: Which means separating the memory that lasts from the minds that come and go
+date: 2026-10-23
+summary: Where an agent should keep what it knows
 plate: swell-cyan-3
 ---
 
-In 1494 a Franciscan friar named Luca Pacioli published the method Venetian merchants had used for generations to keep their books. Double entry let a firm remember every coin that moved through it, better than any one of its partners could. Much of what a company is today grew out of that ledger. The firm became the thing that remembers.
+Most of the money and talent in AI is going into making models smarter, which makes sense. Much less is going into where an agent keeps what it knows between one model call and the next. I think that second part decides more than it looks like, so this is an attempt to explain why, with some math.
 
-The industry is betting that the next leap will come from a bigger model. I suspect that inside a company it will come from a better ledger. Every model is replaced within months, so what makes an agent brilliant at your company, who decides what, why the last deal fell through, where every file lives, has to sit in a record that outlasts every model it will ever use. Agents already pass the Turing test in writing and in voice. What they lack is what every new hire is given, a computer, an inbox, a calendar and years of memory.
+## What an agent has to keep
 
-The odd thing is that the right storage for this is the slowest in the cloud. For fifty years databases were built to answer in milliseconds, because a person was waiting. An agent waits seconds on a model at every step, so writing each step to object storage, which takes tens of milliseconds, adds about one percent. Speed stops mattering, and what is left is that nothing is lost and keeping it costs almost nothing. Neon put Postgres on object storage, turbopuffer did it for search, and workflow engines like Temporal write down every step so a crash can resume. Pull the thread through and you get agents whose minds are rented by the second and whose memory sits in a bucket that never fills up.
+A model on its own remembers nothing between calls. Everything that makes an agent useful over weeks lives outside it. The conversation so far, the facts it has learned about the people it works for, the files on the computer it works on, and the run itself, meaning which steps are done and which are waiting on a person or a timer. On top of that sits a record of every model call, which you need later to explain why the agent did what it did.
 
-That split is more than engineering. It decides who holds the company's mind. When the memory lives inside a model vendor's product, the vendor keeps it and the company rents it back. When it lives in storage the company owns, the company keeps its mind and rents the thinking, the way it owns its books and hires its accountants. Most companies will make that choice without noticing, the day they switch on a memory feature.
+I believe in the Bitter Lesson, so I assume the model under all of this gets replaced by a better one every few months. That only works if the state survives the swap. It also has to survive a crash halfway through a step, it has to cost very little while the agent sits idle, which is most of the time, and someone has to be able to delete it properly.
 
-It also changes what it means to work somewhere. The record keeps how you wrote, negotiated and decided, and when you leave, the agents keep doing your job the way you did it. Europe already lets you ask a company to erase your personal data. Nobody has written the rule for a company that has learned how you think. I expect employment contracts will soon say what a company may keep of you after you go, and I expect people will negotiate it the way they negotiate salary.
+## Why not a normal database
 
-Run that for fifty years and a company becomes the judgment of everyone who ever worked there, still deciding after all of them are gone. Pacioli's ledger let merchants remember money. The record being written now will remember everything else, and the first company with no employees will be built from the memory of one that had them.
+The obvious question is why not use Postgres. Most teams do at first, and then the state spreads over several systems, because each piece has a specialist. Records go in Postgres, memory goes in a vector database, the run goes in a workflow engine so a crash doesn't lose it, the computer is a sandbox from another vendor and the model calls go to a logging service.
+
+These systems can't commit together. One step of an agent might send an email, write what it learned to memory and set a timer to follow up. If the process dies in the middle, the workflow engine can record the email as sent while memory never hears about it. So teams write code to reconcile the pieces, and that code tends to get rewritten whenever the models change what an agent can do.
+
+Even with everything in one Postgres, two things don't fit. Databases were built for a person waiting on a screen, so they are tuned to answer in milliseconds, and they run on servers that cost the same whether anyone is using them or not. An agent mostly waits on a model, and most agents are idle most of the time.
+
+## The math on object storage
+
+Start with latency. A durable write to object storage takes tens of milliseconds, typically somewhere between 50 and 100 in the same region. A step of an agent waits on a model for anything from a few hundred milliseconds to a few minutes. If a typical step takes five seconds of model time and the commit takes 75 milliseconds, storage adds 1.5 percent to the step.
+
+Cost goes the other way. A gigabyte in S3 Standard costs about 2.3 cents a month at list price, and S3 already keeps it across at least three availability zones. The same gigabyte on SSD volumes, copied three times the way many databases keep it, costs about 24 cents. Held in server memory it is closer to five dollars. For a billion agents with a gigabyte each, that is roughly 20 million dollars a month in a bucket, against hundreds of millions on disks and billions in memory. And an agent that isn't running costs only its bytes, because no server has to stay up for it.
+
+The old objection to object storage was coordination. Two processes could both believe they own a database and overwrite each other's work. Since 2024 S3 can refuse a write if the object already exists or has changed since you read it, which is a compare and swap. That is enough to give each database a single writer and fence off a stale one, without running a separate consensus service next to the bucket.
+
+## One engine
+
+People have been rebuilding pieces of the stack on object storage for a few years. Neon did it for Postgres, turbopuffer for search and WarpStream for Kafka. SlateDB is an open source storage engine that writes its log and its sorted files straight to a bucket, so a write is durable once its log object lands, with no local disk in the way.
+
+What I think comes next is putting all of an agent's state on one engine like that, in one bucket. The run, the memory and its search index, the filesystem of the agent's computer and the record of model calls each become a service written on the same storage. A step of the agent then commits as one batch. The tool's result, the memory it wrote, the position it has read up to and the timer it set either all land or none do. The history is one log that is only ever appended to, and the context a model sees on each call is a view over that log.
+
+A few consequences follow. The files of a database on object storage never change once written, so a fork is a checkpoint plus a clone that shares every file it hasn't touched, and forking an agent with its computer and its unfinished run takes well under a second. That makes it cheap to try a task several ways and keep the one that worked. Every step is recorded, so a new model can replay last month's work and you can compare the results before trusting it. Deleting someone's data means deleting it in one place instead of chasing it through five systems. And because the bucket is the only thing holding state, the whole stack can run in a company's own cloud account, next to its data.
+
+## What it costs
+
+None of this is free. Every commit pays a round trip to the bucket, so a workload that needs microseconds belongs somewhere else. Object storage doesn't notify anyone of changes, so other processes have to poll, and the poll interval sets how fresh they can be. There are no transactions across two databases, so anything that has to change together has to live in the same one. Deleted bytes only disappear when compaction gets to them, so until then a delete has to be enforced on every read. And if the bucket goes down, everything goes down, which you handle by replicating the bucket.
+
+Agents spend most of their time waiting on a model, so these costs matter less to them than they would to most software. My guess is that most agent infrastructure ends up looking roughly like this.
+
+So, in short, this is where I think it goes.
+
+1. Every agent keeps every step it has ever taken, and a gigabyte of that costs less than thirty cents a year to keep.
+2. Agents fork themselves to try a hard problem many ways at once, and keep the branch that worked.
+3. Every new model starts where the last one stopped, and is checked against years of recorded work before it touches anything real.
+4. Every person and every company on Earth has agents like this, most of them asleep in a bucket at any given moment and awake within a second when something needs them.
+
+An agent that runs for thirty years will think with more than a hundred different models along the way and remember every step it took with each of them. That is most of what I mean when I say superintelligence is a storage problem.
