@@ -1,56 +1,20 @@
 ---
 title: Superintelligence is a storage problem
 date: 2026-10-23
-summary: Pull the state out of compute, like Kubernetes, Neon and turbopuffer did
+summary: Why I think agents should keep what they know apart from the model
 plate: swell-cyan-3
 ---
 
-Models get better every few months. People don't. Most AI is still built around a person anyway. You open a chat, paste in the context, read the answer, carry the useful part over to the next chat. The model is the compute and you are the storage. Only one of those improves every quarter.
+Models get better every few months, and people don't. Still, most AI today is built around a person. You paste in the context, read the answer and carry what matters over to the next chat. The model does the computing and you do the remembering, so the whole thing improves only as fast as you do.
 
-Most of the big infrastructure shifts of the last decade were the same move. Pull state out of compute, put it somewhere durable and cheap, and make compute disposable. I think agents are next, and that most of what people mean by superintelligence comes down to doing that well.
+I think this changes when the model becomes a stateless function you swap whenever a better one ships, and everything the agent knows lives somewhere that outlasts it. Its files, its memory, its unfinished work and the log of every call it made.
 
-## The split
+Infrastructure has gone through this a few times already. Kubernetes moved state out of servers into etcd, so a pod can die and the next one starts from the same desired state. Neon took the disk out of Postgres, so compute holds nothing, a branch is copy on write and an idle database costs only its bytes. turbopuffer did the same for search, with S3 as the source of truth and NVMe as a cache. When Databricks bought Neon in 2025, more than 80 percent of the databases on it were being created by agents, which says a lot about who this design ends up serving.
 
-A model is a stateless function. Context in, tokens out, nothing kept. Everything else an agent has is state. The files it works on, what it has learned, the run with its pending steps and timers, the log of every call. If that state lives in a process, a session or someone's head, every model swap starts from zero. The Bitter Lesson says the swaps keep coming, so the state has to live somewhere that outlasts all of them.
+The version I keep coming back to puts the whole agent on a bucket. One LSM tree on S3, with its WAL, its SSTs and a manifest. Since 2024 S3 can compare and swap on a write, which is enough to fence off a stale writer without a consensus service beside it. Each step of the agent commits as one write, so the email and the memory of sending it land together or not at all.
 
-## Kubernetes
+Latency looks like the weak point, but a write to S3 takes tens of milliseconds and a step already waits seconds on a model, so it barely shows. Cost matters more. A gigabyte in S3 is about 2 cents a month, against about 24 on replicated SSD and around 5 dollars in RAM. Keeping everything an agent has ever done is only affordable at the first price, and an agent that is asleep costs nothing beyond its bytes.
 
-Desired state sits in etcd. Controllers watch it and reconcile, level triggered, so a missed event doesn't matter because the next pass sees the diff. Pods hold nothing they can't lose, which is why you can kill one, reschedule it or run a thousand.
+What I find most interesting is how much follows from files that never change. A fork is a new manifest pointing at the same files, so an agent can be copied in under a second and try a problem ten ways at once. A new model can replay last month's work before it touches anything real, and each correction a person makes becomes a test the next model has to pass.
 
-Agents want exactly this. A process that holds nothing can die mid step, and the next one reads the same state and carries on. You can put a hundred of them on one problem and nobody has to remember where things were.
-
-## Neon
-
-Postgres with the disk ripped out. Compute is a stateless Postgres. WAL streams to safekeepers, a Paxos quorum, and pageservers rebuild any page at any LSN and push their layer files to S3. A branch is a new timeline at an LSN, copy on write, so it's instant at any size. Idle compute goes to zero and you pay for bytes.
-
-When Databricks bought Neon in May 2025 it said over 80 percent of the databases on Neon were created by agents. Agents spin up state, branch it and throw most of it away. That workload only makes sense when compute is disposable.
-
-## turbopuffer
-
-Same move for search. S3 is the source of truth and NVMe and RAM are a cache. A cold query pays a few hundred milliseconds to S3, a warm one a few milliseconds. So you can keep a namespace per codebase, roughly how Cursor uses it, and the cold ones cost only storage.
-
-Most of what an agent knows is cold most of the time, and the prices settle it. S3 Standard is about $0.023 per GB month, already across three availability zones. gp3 is $0.08, so $0.24 with three replicas. RAM is around $5. Everyone keeping their full history only works at the first number.
-
-## An agent on a bucket
-
-One LSM tree on object storage, with WAL objects, SSTs and a manifest. All of the agent's state goes in it. Files, memory, the vector and text index, durable runs and timers, the log of model calls.
-
-Since late 2024 S3 supports conditional PUTs on the ETag, which is compare and swap on the manifest. A writer bumps an epoch, and a zombie writer's next manifest write fails, so it's fenced. No ZooKeeper or etcd next to the bucket.
-
-A step commits as one WAL write. Tool result, memory delta, read cursor and next timer land together or not at all. The classic bug where the email got sent and memory never heard about it needs two systems, and there is one.
-
-Latency is the obvious objection. A PUT takes tens of milliseconds and a step waits seconds on a model, so 75 ms on a 5 second step is 1.5 percent. Requests cost $0.005 per thousand PUTs, half a thousandth of a cent per step.
-
-Immutable SSTs give you the rest almost for free. A fork is a new manifest pointing at the same files, so forking an agent with its disk and its half finished run takes well under a second. Run k branches and keep the winner. Every step is in the log, so a new model can replay last month on the same inputs and be diffed before it touches anything. A person's correction becomes an eval case in the same log, and every new model reruns all of them. Swapping the compute then ratchets the agent up where today it resets it.
-
-## Costs
-
-- Every commit pays an S3 round trip, so microsecond workloads belong elsewhere.
-- S3 event notifications are slow and at least once, so readers poll, and the poll interval is your staleness.
-- No transactions across databases. What has to commit together lives in one.
-- A delete is a tombstone until compaction rewrites the SST, so erasure is enforced on read until then.
-- The bucket going down takes everything down. Replicate the bucket.
-
-Agents spend most of their time waiting on a model, so all of this is cheap for them in particular.
-
-Kubernetes pulled state out of servers. Neon and turbopuffer pulled it out of databases and search. The model is just compute now, rented and better every quarter. What compounds is the storage. That's what I mean by superintelligence being a storage problem.
+If that holds, a new model no longer starts over. It picks up where the last one stopped, and the agent gets better with every release without a person having to carry it. That is most of what I mean when I say superintelligence is a storage problem.
